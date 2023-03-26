@@ -328,12 +328,51 @@
 
 <script>
 
+  const LABELS = {
+    de: {
+      INI: 'INI',
+      AW: 'AW',
+      A: 'A',
+      RK: 'RK',
+      TP: 'TP',
+      BW: 'BW',
+      RW: 'RW',
+      ZAH: 'ZÄH',
+      REF: 'REF',
+      WIL: 'WIL',
+      G: 'AW',
+      BES: 'BES',
+      rechtschaffen: 'rechtschaffen',
+      neutral: 'neutral',
+      chaotisch: 'chaotisch'
+    },
+    en: {
+      INI: 'Init',
+      AW: 'HD',
+      A: 'Atk',
+      RK: 'AC',
+      TP: 'hp',
+      BW: 'MV',
+      RW: 'SV',
+      ZAH: 'Fort',
+      REF: 'Ref',
+      WIL: 'Will',
+      G: 'AL',
+      BES: 'SP',
+      rechtschaffen: 'lawful',
+      neutral: 'neutral',
+      chaotisch: 'chaotic'
+    }
+  }
+
   let allCardsTemplate;
   let textAreaElement;
   let drawBorderCheckbox;
   let multiplyCardsCheckbox;
   let randomMonsterCountCheckbox;
   let maxCardsPerMonsterInputField;
+  let langRadioDe;
+  let langRadioEn;
 
   document.addEventListener('DOMContentLoaded', () => {
     textAreaElement = document.querySelector('#input-text');
@@ -341,7 +380,20 @@
     multiplyCardsCheckbox = document.querySelector('#multiply-cards');
     randomMonsterCountCheckbox = document.querySelector('#random-monster-count');
     maxCardsPerMonsterInputField = document.querySelector('#max-cards-per-monster');
+    langRadioDe = document.querySelector('#cards-language-de');
+    langRadioEn = document.querySelector('#cards-language-en');
     onMultipleCardsOptionChanged();
+
+    Handlebars.registerHelper('translateDice', function (s, lang) {
+      switch (lang) {
+        case 'de':
+          return s;
+        case 'en':
+          return s.replaceAll(/(\d*)(W)(\d)/g, "$1d$3");
+        default:
+          return s;
+      }
+    });
 
     allCardsTemplate = Handlebars.compile(document.querySelector('#all-cards-template').innerHTML);
     Handlebars.registerPartial('cardPartial', document.querySelector('#single-card-template').innerHTML);
@@ -499,13 +551,19 @@
     const multiplyCards = multiplyCardsCheckbox.checked;
     const randomMonsterCount = randomMonsterCountCheckbox.checked;
     const maxNumberOfCopies = maxCardsPerMonsterInputField.value;
-    const monsterStats = parseMonsterStats(inputText);
     const drawBorder = !!drawBorderCheckbox.checked;
+    const lang = langRadioDe.checked ? 'de' : 'en';
+    const labels = LABELS[lang];
+
+    const monsterStats = parseMonsterStats(inputText);
+
     document.querySelector('#output').innerHTML = renderCards(monsterStats, {
       multiplyCards,
       maxNumberOfCopies,
       randomMonsterCount,
-      drawBorder
+      drawBorder,
+      lang,
+      labels
     });
     console.log("...finished");
   }
@@ -574,47 +632,47 @@
       </div>
 
       <div class="iniaw prop">
-          <div class="ini label">INI</div>
+          <div class="ini label">{{settings.labels.INI}}</div>
           <div class="ini value">{{monster.ini}}</div>
-          <div class="aw label ml">AW</div>
-          <div class="aw value">{{monster.aw}}</div>
+          <div class="aw label ml">{{settings.labels.AW}}</div>
+          <div class="aw value">{{translateDice monster.aw settings.lang}}</div>
       </div>
 
       <div class="a prop">
-          <div class="a label">A</div>
-          <div class="a value">{{monster.a}}</div>
+          <div class="a label">{{settings.labels.A}}</div>
+          <div class="a value">{{translateDice monster.a settings.lang}}</div>
       </div>
 
       <div class="rktp prop">
-          <div class="rk label">RK</div>
+          <div class="rk label">{{settings.labels.RK}}</div>
           <div class="rk value">{{monster.rk}}</div>
-          <div class="tp label ml">TP</div>
-          <div class="tp value">{{monster.tp}} ({{monster.tw}})</div>
+          <div class="tp label ml">{{settings.labels.TP}}</div>
+          <div class="tp value">{{monster.tp}} ({{translateDice monster.tw settings.lang}})</div>
       </div>
 
       <div class="bw prop">
-          <div class="bw label">BW</div>
+          <div class="bw label">{{settings.labels.BW}}</div>
           <div class="bw value">{{monster.bw}}</div>
       </div>
 
       <div class="rw prop">
-          <div class="rw label">RW ZÄH</div>
+          <div class="rw label">{{settings.labels.RW}} {{settings.labels.ZAH}}</div>
           <div class="rw value">{{monster.rw_zaeh}}</div>
-          <div class="rw label ml">REF</div>
+          <div class="rw label ml">{{settings.labels.REF}}</div>
           <div class="rw value">{{monster.rw_ref}}</div>
-          <div class="rw label ml">WIL</div>
+          <div class="rw label ml">{{settings.labels.WIL}}</div>
           <div class="rw value">{{monster.rw_wil}}</div>
       </div>
 
       <div class="g prop">
-          <div class="g label">G</div>
-          <div class="g value">{{monster.gesinnung}}</div>
+          <div class="g label">{{settings.labels.G}}</div>
+          <div class="g value">{{lookup settings.labels monster.gesinnung}}</div>
       </div>
 
       {{#if monster.sp}}
       <div class="sp prop">
-          <div class="sp label">BES</div>
-          <div class="sp value">{{monster.sp}}</div>
+          <div class="sp label">{{settings.labels.BES}}</div>
+          <div class="sp value">{{translateDice monster.sp settings.lang}}</div>
       </div>
       {{/if}}
 
