@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Printable Monster Cards</title>
+  <title>Printable DCC RPG Monster Cards</title>
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
   <!--suppress SpellCheckingInspection, CssReplaceWithShorthandSafely -->
   <style>
@@ -234,6 +234,12 @@
       font-weight: bold;
     }
 
+    .right-arrow:after {
+      content: '\2192';
+      font-size: xx-large;
+      font-weight: bold;
+    }
+
     .instruction {
       padding: 0.2em;
     }
@@ -243,7 +249,14 @@
 <body>
 
 <div id="input">
-  <h1>Printable Monster Cards</h1>
+  <h1>
+    Printable DCC RPG Monster Cards
+    <span style="font-size: medium">
+      for the Dungeon Crawl Classics RPG by
+      <a href="https://goodman-games.com/" target="_blank">Goodman Games</a> (english) /
+      <a href="https://www.system-matters.de/shop/dungeon-crawl-classics/" target="_blank">System Matters</a> (deutsch)
+    </span>
+  </h1>
   <form id="input-form">
 
     <div id="input-box-text" class="input-box">
@@ -252,13 +265,12 @@
       </textarea>
       <div id="input-text-instructions" class="instructions-box">
         <div class="instruction">
-          <span class="instruction-number">1.</span> Copy monster stats from your DCC adventure PDF</label><br>
-          (Both, English and German PDFs are supported by now)
+          <i class="right-arrow"></i> <span class="instruction-number">1.</span> Copy monster stats from your DCC RPG adventure PDF</label><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(English and German stats are supported. Separate stats by blank lines)
         </div>
         <div class="instruction">
           <i class="left-arrow"></i> <span class="instruction-number">2.</span> Paste the copied monster stats
-           here<br>
-          or <label for="input-text">use the</label> <button id="sample-button" type="button" onclick="pasteSampleStats(); createCards()">Sample Stats</button>
+           here (or <label for="input-text">use the</label> <button id="sample-button" type="button" onclick="pasteSampleStats(); createCards()">Sample Stats</button>)
         </div>
         <div class="instruction">
           &nbsp;
@@ -273,10 +285,10 @@
     <div class="input-box">
       <div id="input-options" class="input-inner-box">
         <div>
-          <input id="draw-border" type="checkbox" onchange="createCards()" checked> <label for="draw-border">Print lines for cutting</label>
+          <input id="draw-border" type="checkbox" onchange="createCards()" checked> <label for="draw-border">Print cutting lines</label>
         </div>
         <div>
-          <input id="multiply-cards" type="checkbox" onchange="onMultipleCardsOptionChanged(); createCards()"> <label for="multiply-cards">Multiple cards for stats which contain the number of monsters</label>
+          <input id="multiply-cards" type="checkbox" onchange="onMultipleCardsOptionChanged(); createCards()"> <label for="multiply-cards">Print multiple cards when number of monsters is given</label>
         </div>
         <div>
           <input id="random-monster-count" type="checkbox" onchange="createCards()"> <label for="random-monster-count">Use random number of cards for stats with dice roll formula as number</label>
@@ -518,43 +530,18 @@
             '... Schnabelmenschen ...\n\n' +
             'Bauer (5): INI -2; A Keule -2 nah (1W4-1); RK 9; TW 1W4; TP 2; BW 9 m; AW 1W20; RW ZÄH -1, REF -2, WIL -1; G N.\n\n' +
             'Krokodilritter: INI -1; A Grünsteinlanze +3 nah (1W12+3); RK 15; TW 2W7; TP 7; BW 6 m oder schwimmen 4,5 m; AW 1W20; RW ZÄH +2; REF -1; WIL -1; BES Lanze zerbricht bei Krit, Patzer oder Großtat; G R.\n\n' +
-            // 'Astraler Schatten (Löwe): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Greif): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Oger): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Drache): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Riese): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Spinne): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Schlange): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Astraler Schatten (Teufel): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
-            // 'Wache der Schnabelmenschen (8): INI -1; A Zangen +3 nah (1W4+3) oder durch Waffe +3; RK 15; TW 2W12; TP je 15; BW 7,5 m; AW 1W20; RW ZÄH +2, REF -1, WIL +4; G R.\n\n' +
-            // 'Schnabelmensch im Puppenstadium (20) INI -1; A Klaue +1 nah (1W3); RK 8; TW 1W5, TP je 3; BW 7,5 m oder schwim- men 4,5 m; AW 1W20, RW ZÄH -1, REF -2, WILL -5; G C.\n\n' +
             'Waffenknecht: INI -1; A Speer +1 nah (1W6); RK 14; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
-            // 'Riesenkrokodil: INI -3; A Biss +5 nah (3W4); RK 17; TW 3W8; TP 15; BW 12 m oder schwimmen 9 m; AW 1W20; RW ZÄH +2; REF -2; WIL -2; G N.\n\n' +
+            'Riesenkrokodil: INI -3; A Biss +5 nah (3W4); RK 17; TW 3W8; TP 15; BW 12 m oder schwimmen 9 m; AW 1W20; RW ZÄH +2; REF -2; WIL -2; G N.\n\n' +
             'Schnabelmensch (10): INI +0; A Klaue +1 nah (1W5+1); RK 9; TW 1W7; TP 4; BW 9 m oder schwimmen 6 m; AW 1W20; RW ZÄH +1; REF -1; WIL -3; G R.\n\n' +
-            // 'Der Meister (astraler Schatten): INI +1; A schwarzes Ge- schoss +3 fern (1W5+1); RK 10; TW 1W6; TP 3; BW 12 m oder fliegen 6 m; AW 1W20; BES immun gegen nichtmagische Waffen, 1W20+3 Gegenzauber (gewährt +1W5 TP pro gekon- terter Zaubergrad), nimmt 1 Schaden pro geschleudertem, schwarzem Geschoss; RW ZÄH +5, REF -3, WIL +10; G C.\n\n' +
-            // 'Krokodilritter mit Menschenfänger (3): INI -1; A Menschenfänger +3 nah (REF- RW mit SG 10, um nicht festgehalten zu werden, 1W10+3 Schaden bei Befreiung) oder Grünsteinlanze +3 nah (1W12+3); RK 15; TW 2W7; TP je 7; BW 6 m oder schwim- men 4,5 m; AW 1W20; RW ZÄH +2, REF -1, WIL -1; G R.\n\n' +
-            // 'Wache der Schnabelmenschen (8 aus Bereich 1-2): INI -1; A Zangen +3 nah (1W4+3) oder durch Waffe +3; RK 15; TW 2W12; TP je 15; BW 7,5 m; AW 1W20; RW ZÄH +2, REF -1, WIL +4; G R.\n\n' +
-            // 'Weberdämonin (Typ III): INI +3; A 8 Klauen +8 nah (1W5) oder Netzfaden +3 fern (festgehalten, 1W4 Schaden beim Losreißen); RK 14; TW 6W12; TP 36; BW klettern 1,5 m so- lange angekettet, nach Freilassung 9 m; AW 9W20; BES Dä- monenfähigkeiten, Gedanken lesen, immun gegen nichtma- gische Waffen oder Angriffe mit natürlichen Waffen durch Wesen mit 3 oder weniger TW, nimmt halben Schaden durch Feuer/Säure/Kälte/Elektrizität/Gas; RW ZÄH +5, REF -3, WIL 10; G C.\n\n' +
-            // 'Kriegsherr der Schnabelmenschen INI +0; A Streitaxt +3 nah (1W10+3) oder Grünstein-Wurfspeer +3 fern (1W5+6); RK 15; TW 5W7; TP 18; BW 7,5 m oder schwimmen 7,5 m; AW 1W20; BES Ziel in den Teich schleudern bei 17+; RW ZÄH +5, REF -1, WIL +3; G R.\n\n' +
-            // 'Riesenkrokodil (uralt): INI -5, A Biss +7 nah (5W4 und un- ter Wasser ziehen); RK 15; TW 5W8; TP 20; BW 12 m oder schwimmen 9 m; AW 1W20; BES zieht das Ziel bei einem erfolgreichen Angriff unter Wasser; RW ZÄH +3, REF -3, WIL +6; G R.\n\n' +
-            // 'Der Meister: INI +1; A schwarzes Geschoss +3 fern (1W5+1); RK 10; TW 5W6; TP 25; BW 9 m; AW 2W20; BES 1W20+3 Ge- genzauber (er erhält 1W5 TP pro gekonterte Spruchstufe), be- herrscht astrale Schatten, nimmt 1 Schaden für jedes geschleu- derte schwarze Geschoss; RW ZÄH +5; REF -3; WIL +10; G C.\n\n' +
+            'Der Meister: INI +1; A schwarzes Geschoss +3 fern (1W5+1); RK 10; TW 5W6; TP 25; BW 9 m; AW 2W20; BES 1W20+3 Ge- genzauber (er erhält 1W5 TP pro gekonterte Spruchstufe), be- herrscht astrale Schatten, nimmt 1 Schaden für jedes geschleu- derte schwarze Geschoss; RW ZÄH +5; REF -3; WIL +10; G C.\n\n' +
             '... Barbarenkönige ...\n\n' +
             'Der Hund von Hirot: INI +2; A Biss +3 nah (1W8) oder Klaue +3 nah (1W4); RK 15; TW 4W12; TP 20; BW 9 m oder fliegen 9 m; AW 3W20 (Klaue, Klaue, Biss); BES Dämonen- fähigkeiten, gasförmige Gestalt, immun gegen Bezaubern-Ef- fekte, unsterblich; RW ZÄH +4, REF +4, WIL +0; G C.\n\n' +
             'Jarl: INI +2; A Langschwert +4 nah (1W8) oder Bogen +4 fern (1W6); RK 18; TW 2W8; TP 16; BW 6 m; AW 1W20; RW ZÄH +1, REF +2, WIL +2; G R.\n\n' +
-            // 'Gefolgsmann (7): INI +1; A Langschwert +3 nah (1W8) oder Bogen +3 fern (1W6); RK 16; TW 2W8; TP 12; BW 6 m; AW 1W20; RW ZÄH +2, REF +1, WIL +1; G R.\n\n' +
-            // 'Dorfbewohner (35): INI -2; A Improvisierte Waffe -1 nah (1W4-1); RK 9; TW 1W4; TP 2; BW 9 m; AW 1W20; RW ZÄH -1, REF -2, WIL -1; G N.\n\n' +
             'Nothan der Jüngere, Meister der Wache: INI +1, A Lang- schwert +1 nah (1W8); RK 15; TW 2W8; TP 10; BW 6 m; AW 1W20; RW ZÄH +2, REF +1, WIL +1; G R.\n\n' +
-            // 'Nachtwache (6): INI +0, A Speer +1 nah (1W6), RK 14; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
-            // 'Mokel: INI +0; A Speer +1 nah (1W6) oder Arm- brust +0 fern (1W6); RK 10; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
-            // 'Naven: INI +0; A Speer +1 nah (1W6) oder Arm- brust +0 fern (1W6); RK 10; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
             'Sylle Ru, Seher: INI +0; A Dolch -1 nah (1W4-1) oder Scha- denszauber (2W4, Reichweite 15 m, kein RW, bis zu 3/Tag); RK 10; TW 3W4; TP 6; BW 9 m; AW 1W20; BES Zaubertrick (WIL-RW mit SG 12 oder Ziel hat den Eindruck dass seine Waffe für 1W6+1 Runden verschwindet), Schadenszauber 3/Tag; RW ZÄH +1, REF +1, WIL +4; G C.\n\n' +
-            // 'Bahrenwache (3): INI +0; A Speer +1 nah (1W6); RK 14; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
             'Schlangengeist: INI +3; A Schlag +3 nah (1W5); RK 14; TW 4W8; TP 24; BW 12 m; AW 1W20; BES Verschlingen und Er- tränken, feuer- und hitzeempfindlich, Elementarfähigkeiten; RW ZÄH +2, REF +2, WIL +4; G N.\n\n' +
-            // 'Gruftghul (2): INI +1; A Klaue +1 nah (1W5); RK 8; TW 3W6; TP 10, 13; BW 7,5 m oder klettern 7,5 m; AW 2W20; BES Untotenmerkmale, Dunkelsicht 30 m; RW ZÄH +1, REF +0, WIL +0; G C.\n\n' +
-            // 'Ghulschlange (1/Ghul): INI +3; A Biss +4 nah (1W6 + Nekro- se); RK 14; TW 3W6; TP 10; BW 13,5 m; AW 2W20; BES Untoten- merkmale, Dunkelsicht 30 m; RW ZÄH +1, REF +1, WIL +1; G C.\n\n' +
-            // 'Iraco, der Jagdführer: INI +4; A Langschwert +4 nah (1W8+2) oder Kurzbogen +5 fern (1W6); RK 16; TW 2W8; TP 15; BW 6 m; RW ZÄH +3, REF +3, WIL +1; G C.\n\n' +
+            'Gruftghul (2): INI +1; A Klaue +1 nah (1W5); RK 8; TW 3W6; TP 10, 13; BW 7,5 m oder klettern 7,5 m; AW 2W20; BES Untotenmerkmale, Dunkelsicht 30 m; RW ZÄH +1, REF +0, WIL +0; G C.\n\n' +
             'Jäger (5): INI +2, A Kurzschwert +2 nah (1W6+1) oder Kurz- bogen +3 fern (1W6); RK 15; TW 1W8; TP 5; BW 6 m; AW 1W20; RW ZÄH +2, REF +2, WIL +0; G C.\n\n' +
-            // 'Tindalos-Ranke: INI +4, A Hieb +3 nah (1W4 + Würgen); RK 10; TW 2W8; TP 12; BW 1,5 m; AW 1W20; BES Würgen mit 1W3 Schaden und 1,5 m weit schleifen; RW ZÄH +3, REF -1, WIL +4; G N.\n\n' +
             'Sumpfschakal (3W7): INI +2; A Biss +2 nah (1W4); RK 12; TW 1W8; TP 4; BW 12 m; AW 1W20; RW ZÄH +1, REF +2, WIL +1; G C.\n\n' +
             '... Sailors ...\n\n' +
             'Vine Horrors (2): Init +2; Atk vine +2 melee (1d4); AC 13; HD 2d10; hp 10 each; MV 20’; Act 2d20; SP entangle (automatic 1d6 damage on next round if both vine attacks land; DC 15 Str check to escape); SV Fort +2, Ref +0, Will +2; AL C.\n\n' +
