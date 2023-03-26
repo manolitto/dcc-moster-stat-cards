@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Printable Monster Cards</title>
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <!--suppress SpellCheckingInspection, CssReplaceWithShorthandSafely -->
+  <style>
+
+    @media print {
+      #input {display:none;}
+      body {
+        margin: 0 0 0 0;
+        border: none;
+        padding: 0 0 0 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      .output-box {
+        margin: 0 0 0 0;
+        border: none;
+        padding: 0 0 0 0;
+        box-sizing: border-box;
+      }
+      .output-box>h2 {
+        display: none;
+      }
+      #output {
+        width: 100vw;
+        height: 100vh;
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-left: 0;
+        margin-right: 0;
+        border: none;
+        padding: 0 0 0 0;
+      }
+    }
+
+    @media screen {
+      body {
+        margin: 0 0 0 0;
+        border: none;
+        padding: 0 0 0 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      .output-box {
+        margin: 1em 1em 1em 1em;
+        border: 1px solid;
+        padding: 1em 1em 1em 1em;
+        display: flow-root;
+      }
+      .output-box>h2 {
+        margin-top: 0;
+      }
+      #output {
+        width: 49em;
+        height: 70em;
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-left: 0;
+        margin-right: 0;
+        border: none;
+        padding: 0 0 0 0;
+        display: flow-root;
+      }
+    }
+
+    @page {
+      display: block;
+      page-break-after: always;
+      padding: 0;
+    }
+
+    #input {
+      margin: 1em 1em 1em 1em;
+      border: 1px solid;
+      padding: 1em 1em 1em 1em;
+    }
+
+    .card {
+      display: block;
+      float: left;
+
+      break-inside: avoid;
+
+      width: calc(50%);
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: 1em;
+      padding-right: 1em;
+
+      height: calc(25%);
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 1em;
+      padding-bottom: 1em;
+
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .border-yes {
+      border: 1px gray dashed;
+    }
+
+    .border-no {
+      border: none;
+    }
+
+    #name {
+      font-weight: bold;
+      font-size: 1.2em;
+      grid-area: a;
+      width: 100%;
+      padding-bottom: 0.1em;
+    }
+
+    .label {
+      font-weight: lighter;
+      font-size: 0.8em;
+      margin-right: 0.2em;
+      display: inline;
+    }
+
+    .label:after {
+      content: ':';
+    }
+
+    .value {
+      /*float: left;*/
+      font-weight: bolder;
+      font-size: 1em;
+      margin-top: 0.2em;
+      margin-right: 0;
+      margin-left: 0;
+      margin-bottom: 0;
+      display: inline;
+    }
+
+    .monster-number {
+      display: inline-block;
+      font-size: 0.8em;
+    }
+
+    .monster-info {
+      display: inline-block;
+      font-size: 0.8em;
+    }
+
+    .prop {
+      float: left;
+    }
+
+    .iniaw.prop {
+      width: 100%;
+    }
+
+    .rktp.prop {
+      width: 100%;
+      padding-top: 0.4em;
+    }
+
+    .bw.prop {
+      width: 100%;
+      padding-top: 0.4em;
+
+    }
+
+    .a.prop {
+      width: 100%;
+    }
+
+    .rw.prop {
+      width: 100%;
+      padding-top: 0.4em;
+    }
+
+    .g.prop {
+      width: 100%;
+    }
+
+    .sp.prop {
+      width: 100%;
+      padding-top: 0.1em;
+    }
+
+    .sp.value {
+      font-size: 0.9em;
+    }
+
+    .ml {
+      margin-left: 1em;
+    }
+    .mr {
+      margin-right: 1em;
+    }
+
+    .input-box {
+      border: solid 1px;
+      padding: 0.2em;
+      display: flow-root;
+    }
+
+    .output-template {
+      display: none;
+    }
+
+    #print-button {
+      font-weight: bold;
+      background-color: lightblue;
+    }
+
+    .instruction-number {
+      color: darkred;
+      font-size: xx-large;
+      font-weight: bold;
+      border: darkred double;
+      display: inline-block;
+    }
+
+    .input-inner-box {
+      float: left;
+    }
+
+    .instructions-box {
+      margin-left: 42em;
+    }
+
+    .left-arrow:after {
+      content: '\2190';
+      font-size: xx-large;
+      font-weight: bold;
+    }
+
+    .instruction {
+      padding: 0.2em;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="input">
+  <h1>Printable Monster Cards</h1>
+  <form id="input-form">
+
+    <div id="input-box-text" class="input-box">
+      <textarea id="input-text" rows="30" cols="80" class="input-inner-box"
+                oninput="createCards()">
+      </textarea>
+      <div id="input-text-instructions" class="instructions-box">
+        <div class="instruction">
+          <span class="instruction-number">1.</span> Copy monster stats from your DCC adventure PDF</label><br>
+          (Both, English and German PDFs are supported by now)
+        </div>
+        <div class="instruction">
+          <i class="left-arrow"></i> <span class="instruction-number">2.</span> Paste the copied monster stats
+           here<br>
+          or <label for="input-text">use the</label> <button id="sample-button" type="button" onclick="pasteSampleStats(); createCards()">Sample Stats</button>
+        </div>
+        <div class="instruction">
+          &nbsp;
+        </div>
+        <div class="instruction">
+           (<button id="clear-button" type="button" onclick="clearInputText(); createCards()">Clear</button>
+          the input text field to start over)
+        </div>
+      </div>
+    </div>
+
+    <div class="input-box">
+      <div id="input-options" class="input-inner-box">
+        <div>
+          <input id="draw-border" type="checkbox" onchange="createCards()" checked> <label for="draw-border">Print lines for cutting</label>
+        </div>
+        <div>
+          <input id="multiply-cards" type="checkbox" onchange="onMultipleCardsOptionChanged(); createCards()"> <label for="multiply-cards">Multiple cards for stats which contain the number of monsters</label>
+        </div>
+        <div>
+          <input id="random-monster-count" type="checkbox" onchange="createCards()"> <label for="random-monster-count">Use random number of cards for stats with dice roll formula as number</label>
+        </div>
+        <div>
+          <label for="max-cards-per-monster">Max number of cards per monster:</label> <input id="max-cards-per-monster" type="number" value="10" onchange="createCards()">
+        </div>
+        <div>
+          Cards Language:
+          <input id="cards-language-de" name="cards-language" type="radio" value="de" onchange="createCards()" checked><label for="cards-language-de">German</label>
+          <input id="cards-language-en" name="cards-language" type="radio" value="en" onchange="createCards()"><label for="cards-language-en">English</label>
+        </div>
+      </div>
+      <div id="input-options-instructions" class="instructions-box">
+        <i class="left-arrow"></i> <span class="instruction-number">3.</span> Chose the options that match your requirements</label>
+      </div>
+    </div>
+
+    <div class="input-box">
+      <div id="input-buttons" class="input-inner-box">
+        <button id="create-button" type="button" onclick="createCards()">Refresh Cards</button>
+        <button id="print-button" type="button" onclick="window.print();">Print</button>
+      </div>
+      <div id="input-buttons-instructions" class="instructions-box">
+        <i class="left-arrow"></i> <span class="instruction-number">4.</span> Print on A4 or Letter sheets (200g paper recommended)</label>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<div class="output-box">
+  <h2>Preview</h2>
+  <div id="output"></div>
+</div>
+
+
+<script>
+
+  let allCardsTemplate;
+  let textAreaElement;
+  let drawBorderCheckbox;
+  let multiplyCardsCheckbox;
+  let randomMonsterCountCheckbox;
+  let maxCardsPerMonsterInputField;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    textAreaElement = document.querySelector('#input-text');
+    drawBorderCheckbox = document.querySelector('#draw-border');
+    multiplyCardsCheckbox = document.querySelector('#multiply-cards');
+    randomMonsterCountCheckbox = document.querySelector('#random-monster-count');
+    maxCardsPerMonsterInputField = document.querySelector('#max-cards-per-monster');
+    onMultipleCardsOptionChanged();
+
+    allCardsTemplate = Handlebars.compile(document.querySelector('#all-cards-template').innerHTML);
+    Handlebars.registerPartial('cardPartial', document.querySelector('#single-card-template').innerHTML);
+    console.log("templates compiled");
+  });
+
+  function parseName(text) {
+    const match = text.match(/^\s*(?<name>[\w\s,äöüÄÖÜß-]*\w)\s*(?:\((?<numberOrInfo>[\w\s/\-,:äöüÄÖÜß]+)\))?\s*:?\s*(?:(?:INI)|(?:Init))\s+(?<ini>[+\-\w()\s]+)\s*[,;]/);
+    return match && match.groups['name'];
+  }
+
+  function parseNumber(text) {
+    const match = text.match(/^\s*(?:[\w\s,äöüÄÖÜß-]*\w)\s*\((?<number>[\dWd]+)\)\s*:?\s*(?:(?:INI)|(?:Init))\s+(?<ini>[+\-\w()\s]+)\s*[,;]/);
+    return match && match.groups['number'];
+  }
+
+  function parseNameInfo(text) {
+    const match = text.match(/^\s*(?:[\w\s,äöüÄÖÜß-]*\w)\s*\((?<numberOrInfo>[\w\s/\-,:äöüÄÖÜß]+)\)\s*:?\s*(?:(?:INI)|(?:Init))\s+(?<ini>[+\-\w()\s]+)\s*[,;]/);
+    return match && match.groups['numberOrInfo'];
+  }
+
+  function parseInit(text) {
+    const match = text.match(/^\s*(?<name>[\w\s,äöüÄÖÜß-]*\w)\s*(?:\((?<numberOrInfo>[\w\s/\-,:äöüÄÖÜß]+)\))?\s*:?\s*(?:(?:INI)|(?:Init))\s+(?<ini>[+\-\w()\s]+)\s*[,;]/);
+    return match && match.groups['ini'];
+  }
+
+  function parseGenericProp(text, props) {
+    if (typeof props !== 'string') {
+      props = props.map(s => '(?:' + s + ')').join('|');
+    }
+    const regExp = new RegExp('[,;]\\s*(?:' + props + ')\\s+(?<prop>[^;]+)\\s*[,;]');
+    const match = text.match(regExp);
+    return match && fixLinebreaks(match.groups['prop'])
+  }
+
+  function parseSaving(text, rwProp) {
+    const regExp = new RegExp('[,;]\\s*(RW|SV)'
+            + '\\s+(ZÄH|Fort)\\s+(?<zaeh>[^,;]+)\\s*[,;]'
+            + '\\s+(REF|Ref)\\s+(?<ref>[^,;]+)\\s*[,;]'
+            + '\\s+(WIL|Will)\\s+(?<wil>[^,;]+)\\s*[,;]');
+    const match = text.match(regExp);
+    return match && match.groups[rwProp];
+  }
+
+  function parseAlignment(text) {
+    const match = text.match(/[,;]\s*(G|AL)\s+(?<gesinnung>[RLNC])\./);
+    if (match) {
+      const ges = match.groups['gesinnung'];
+      switch (ges) {
+        case 'R': return 'rechtschaffen';
+        case 'L': return 'rechtschaffen';
+        case 'N': return 'neutral';
+        case 'C': return 'chaotisch';
+      }
+    }
+    return '?';
+  }
+
+  function unifyDiceRolls(text) {
+    return text && text.replaceAll(/(\d*)(d)(\d)/g, "$1W$3");
+  }
+
+  function fixLinebreaks(text) {
+    return text && text.replaceAll(/([a-zäöü])(- )([a-zäöüû]+)/g,
+            (match, p1, p2, p3) => {
+              if (p3 === 'und' || p3 === 'and' || p3 === 'oder' || p3 === 'or') {
+                return match;
+              } else {
+                return p1 + p3;
+              }
+            });
+  }
+
+  function parseSingleMonsterStat(text) {
+    if (!text) {
+      return null;
+    }
+    const monsterStat = {
+      name: parseName(text),
+      number: parseNumber(text),
+      info: parseNameInfo(text),
+      ini: parseInit(text),
+      a: unifyDiceRolls(parseGenericProp(text, ['A','Atk'])),
+      rk: parseGenericProp(text, ['RK','AC']),
+      tw: unifyDiceRolls(parseGenericProp(text, ['TW','HD'])),
+      tp: parseGenericProp(text, ['TP','hp']),
+      bw: parseGenericProp(text, ['BW','MV']),
+      aw: unifyDiceRolls(parseGenericProp(text, ['AW','Act'])),
+      rw_zaeh: parseSaving(text, 'zaeh'),
+      rw_ref: parseSaving(text, 'ref'),
+      rw_wil: parseSaving(text, 'wil'),
+      gesinnung: parseAlignment(text),
+      sp: unifyDiceRolls(parseGenericProp(text, ['BES','SP']))
+    };
+    return monsterStat.name && monsterStat;
+  }
+
+  function parseMonsterStats(text) {
+    const parts = text.split(/\.\s*\n/);
+    return parts.filter(p => !!p.trim()).map(p => parseSingleMonsterStat(p + '.')).filter(ms => !!ms);
+  }
+
+  function multiplyCards(monsterStats, settings) {
+    const result = [];
+    for (const monsterStat of monsterStats) {
+      const number = monsterStat.number;
+      if (number) {
+        let num;
+        if (number.match(/^\d+$/)) {
+          // plain number
+          num = number;
+        } else {
+          // dice roll?
+          const match = number.match(/^(?<numDice>\d+)?W(?<diceType>\d+)$/);
+          if (match) {
+            const numDice = match.groups['numDice'] || 1;
+            const diceType = match.groups['diceType'];
+            if (settings.randomMonsterCount) {
+              const diceRoll = Math.floor(Math.random() * diceType) + 1;
+              num = numDice * diceRoll;
+              console.debug('Random number of ', monsterStat.name, ' (', number, '): ', numDice, 'x', diceRoll, '=', num);
+            } else {
+              num = numDice * diceType;
+            }
+          }
+        }
+
+        if (num) {
+          if (settings.maxNumberOfCopies) {
+            num = Math.min(num, settings.maxNumberOfCopies);
+          }
+          for (let i = 0; i < num; i++) {
+            const copy = {...monsterStat, number: `#${i+1} / ${number}`}
+            result.push(copy);
+          }
+          continue;
+        }
+
+      }
+      result.push(monsterStat);
+    }
+    return result;
+  }
+
+  function renderCards(monsterStats, settings) {
+    if (settings.multiplyCards) {
+      monsterStats = multiplyCards(monsterStats, settings);
+    }
+    return allCardsTemplate({monsterStats: monsterStats, settings: settings});
+  }
+
+  function createCards() {
+    console.log("Creating cards...");
+    const inputText = textAreaElement.value;
+    const multiplyCards = multiplyCardsCheckbox.checked;
+    const randomMonsterCount = randomMonsterCountCheckbox.checked;
+    const maxNumberOfCopies = maxCardsPerMonsterInputField.value;
+    const monsterStats = parseMonsterStats(inputText);
+    const drawBorder = !!drawBorderCheckbox.checked;
+    document.querySelector('#output').innerHTML = renderCards(monsterStats, {
+      multiplyCards,
+      maxNumberOfCopies,
+      randomMonsterCount,
+      drawBorder
+    });
+    console.log("...finished");
+  }
+
+  function clearInputText() {
+    document.querySelector('#input-text').value = '';
+  }
+
+  function onMultipleCardsOptionChanged() {
+    const multiplyCardsChecked = document.querySelector('#multiply-cards').checked;
+    if (multiplyCardsChecked) {
+      randomMonsterCountCheckbox.disabled = false;
+      maxCardsPerMonsterInputField.disabled = false;
+    } else {
+      randomMonsterCountCheckbox.disabled = true;
+      maxCardsPerMonsterInputField.disabled = true;
+    }
+  }
+
+  function pasteSampleStats() {
+    document.querySelector('#input-text').value =
+            '... Schnabelmenschen ...\n\n' +
+            'Bauer (5): INI -2; A Keule -2 nah (1W4-1); RK 9; TW 1W4; TP 2; BW 9 m; AW 1W20; RW ZÄH -1, REF -2, WIL -1; G N.\n\n' +
+            'Krokodilritter: INI -1; A Grünsteinlanze +3 nah (1W12+3); RK 15; TW 2W7; TP 7; BW 6 m oder schwimmen 4,5 m; AW 1W20; RW ZÄH +2; REF -1; WIL -1; BES Lanze zerbricht bei Krit, Patzer oder Großtat; G R.\n\n' +
+            // 'Astraler Schatten (Löwe): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Greif): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Oger): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Drache): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Riese): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Spinne): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Schlange): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Astraler Schatten (Teufel): INI +0; A +0 nah (1W5); RK 10;TW 1W6;TP je3;BW 9m oder fliegen 9m;AW 1W10 +1W pro nicht unterbrochener Runde; BES immun gegen nichtmagische Waffen und auf WIL basierende Angriffszau- ber; RW ZÄH +3; REF +3; WIL immun; G R.\n\n' +
+            // 'Wache der Schnabelmenschen (8): INI -1; A Zangen +3 nah (1W4+3) oder durch Waffe +3; RK 15; TW 2W12; TP je 15; BW 7,5 m; AW 1W20; RW ZÄH +2, REF -1, WIL +4; G R.\n\n' +
+            // 'Schnabelmensch im Puppenstadium (20) INI -1; A Klaue +1 nah (1W3); RK 8; TW 1W5, TP je 3; BW 7,5 m oder schwim- men 4,5 m; AW 1W20, RW ZÄH -1, REF -2, WILL -5; G C.\n\n' +
+            'Waffenknecht: INI -1; A Speer +1 nah (1W6); RK 14; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
+            // 'Riesenkrokodil: INI -3; A Biss +5 nah (3W4); RK 17; TW 3W8; TP 15; BW 12 m oder schwimmen 9 m; AW 1W20; RW ZÄH +2; REF -2; WIL -2; G N.\n\n' +
+            'Schnabelmensch (10): INI +0; A Klaue +1 nah (1W5+1); RK 9; TW 1W7; TP 4; BW 9 m oder schwimmen 6 m; AW 1W20; RW ZÄH +1; REF -1; WIL -3; G R.\n\n' +
+            // 'Der Meister (astraler Schatten): INI +1; A schwarzes Ge- schoss +3 fern (1W5+1); RK 10; TW 1W6; TP 3; BW 12 m oder fliegen 6 m; AW 1W20; BES immun gegen nichtmagische Waffen, 1W20+3 Gegenzauber (gewährt +1W5 TP pro gekon- terter Zaubergrad), nimmt 1 Schaden pro geschleudertem, schwarzem Geschoss; RW ZÄH +5, REF -3, WIL +10; G C.\n\n' +
+            // 'Krokodilritter mit Menschenfänger (3): INI -1; A Menschenfänger +3 nah (REF- RW mit SG 10, um nicht festgehalten zu werden, 1W10+3 Schaden bei Befreiung) oder Grünsteinlanze +3 nah (1W12+3); RK 15; TW 2W7; TP je 7; BW 6 m oder schwim- men 4,5 m; AW 1W20; RW ZÄH +2, REF -1, WIL -1; G R.\n\n' +
+            // 'Wache der Schnabelmenschen (8 aus Bereich 1-2): INI -1; A Zangen +3 nah (1W4+3) oder durch Waffe +3; RK 15; TW 2W12; TP je 15; BW 7,5 m; AW 1W20; RW ZÄH +2, REF -1, WIL +4; G R.\n\n' +
+            // 'Weberdämonin (Typ III): INI +3; A 8 Klauen +8 nah (1W5) oder Netzfaden +3 fern (festgehalten, 1W4 Schaden beim Losreißen); RK 14; TW 6W12; TP 36; BW klettern 1,5 m so- lange angekettet, nach Freilassung 9 m; AW 9W20; BES Dä- monenfähigkeiten, Gedanken lesen, immun gegen nichtma- gische Waffen oder Angriffe mit natürlichen Waffen durch Wesen mit 3 oder weniger TW, nimmt halben Schaden durch Feuer/Säure/Kälte/Elektrizität/Gas; RW ZÄH +5, REF -3, WIL 10; G C.\n\n' +
+            // 'Kriegsherr der Schnabelmenschen INI +0; A Streitaxt +3 nah (1W10+3) oder Grünstein-Wurfspeer +3 fern (1W5+6); RK 15; TW 5W7; TP 18; BW 7,5 m oder schwimmen 7,5 m; AW 1W20; BES Ziel in den Teich schleudern bei 17+; RW ZÄH +5, REF -1, WIL +3; G R.\n\n' +
+            // 'Riesenkrokodil (uralt): INI -5, A Biss +7 nah (5W4 und un- ter Wasser ziehen); RK 15; TW 5W8; TP 20; BW 12 m oder schwimmen 9 m; AW 1W20; BES zieht das Ziel bei einem erfolgreichen Angriff unter Wasser; RW ZÄH +3, REF -3, WIL +6; G R.\n\n' +
+            // 'Der Meister: INI +1; A schwarzes Geschoss +3 fern (1W5+1); RK 10; TW 5W6; TP 25; BW 9 m; AW 2W20; BES 1W20+3 Ge- genzauber (er erhält 1W5 TP pro gekonterte Spruchstufe), be- herrscht astrale Schatten, nimmt 1 Schaden für jedes geschleu- derte schwarze Geschoss; RW ZÄH +5; REF -3; WIL +10; G C.\n\n' +
+            '... Barbarenkönige ...\n\n' +
+            'Der Hund von Hirot: INI +2; A Biss +3 nah (1W8) oder Klaue +3 nah (1W4); RK 15; TW 4W12; TP 20; BW 9 m oder fliegen 9 m; AW 3W20 (Klaue, Klaue, Biss); BES Dämonen- fähigkeiten, gasförmige Gestalt, immun gegen Bezaubern-Ef- fekte, unsterblich; RW ZÄH +4, REF +4, WIL +0; G C.\n\n' +
+            'Jarl: INI +2; A Langschwert +4 nah (1W8) oder Bogen +4 fern (1W6); RK 18; TW 2W8; TP 16; BW 6 m; AW 1W20; RW ZÄH +1, REF +2, WIL +2; G R.\n\n' +
+            // 'Gefolgsmann (7): INI +1; A Langschwert +3 nah (1W8) oder Bogen +3 fern (1W6); RK 16; TW 2W8; TP 12; BW 6 m; AW 1W20; RW ZÄH +2, REF +1, WIL +1; G R.\n\n' +
+            // 'Dorfbewohner (35): INI -2; A Improvisierte Waffe -1 nah (1W4-1); RK 9; TW 1W4; TP 2; BW 9 m; AW 1W20; RW ZÄH -1, REF -2, WIL -1; G N.\n\n' +
+            'Nothan der Jüngere, Meister der Wache: INI +1, A Lang- schwert +1 nah (1W8); RK 15; TW 2W8; TP 10; BW 6 m; AW 1W20; RW ZÄH +2, REF +1, WIL +1; G R.\n\n' +
+            // 'Nachtwache (6): INI +0, A Speer +1 nah (1W6), RK 14; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
+            // 'Mokel: INI +0; A Speer +1 nah (1W6) oder Arm- brust +0 fern (1W6); RK 10; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
+            // 'Naven: INI +0; A Speer +1 nah (1W6) oder Arm- brust +0 fern (1W6); RK 10; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
+            'Sylle Ru, Seher: INI +0; A Dolch -1 nah (1W4-1) oder Scha- denszauber (2W4, Reichweite 15 m, kein RW, bis zu 3/Tag); RK 10; TW 3W4; TP 6; BW 9 m; AW 1W20; BES Zaubertrick (WIL-RW mit SG 12 oder Ziel hat den Eindruck dass seine Waffe für 1W6+1 Runden verschwindet), Schadenszauber 3/Tag; RW ZÄH +1, REF +1, WIL +4; G C.\n\n' +
+            // 'Bahrenwache (3): INI +0; A Speer +1 nah (1W6); RK 14; TW 1W8; TP 4; BW 7,5 m; AW 1W20; RW ZÄH +1, REF +1, WIL +0; G R.\n\n' +
+            'Schlangengeist: INI +3; A Schlag +3 nah (1W5); RK 14; TW 4W8; TP 24; BW 12 m; AW 1W20; BES Verschlingen und Er- tränken, feuer- und hitzeempfindlich, Elementarfähigkeiten; RW ZÄH +2, REF +2, WIL +4; G N.\n\n' +
+            // 'Gruftghul (2): INI +1; A Klaue +1 nah (1W5); RK 8; TW 3W6; TP 10, 13; BW 7,5 m oder klettern 7,5 m; AW 2W20; BES Untotenmerkmale, Dunkelsicht 30 m; RW ZÄH +1, REF +0, WIL +0; G C.\n\n' +
+            // 'Ghulschlange (1/Ghul): INI +3; A Biss +4 nah (1W6 + Nekro- se); RK 14; TW 3W6; TP 10; BW 13,5 m; AW 2W20; BES Untoten- merkmale, Dunkelsicht 30 m; RW ZÄH +1, REF +1, WIL +1; G C.\n\n' +
+            // 'Iraco, der Jagdführer: INI +4; A Langschwert +4 nah (1W8+2) oder Kurzbogen +5 fern (1W6); RK 16; TW 2W8; TP 15; BW 6 m; RW ZÄH +3, REF +3, WIL +1; G C.\n\n' +
+            'Jäger (5): INI +2, A Kurzschwert +2 nah (1W6+1) oder Kurz- bogen +3 fern (1W6); RK 15; TW 1W8; TP 5; BW 6 m; AW 1W20; RW ZÄH +2, REF +2, WIL +0; G C.\n\n' +
+            // 'Tindalos-Ranke: INI +4, A Hieb +3 nah (1W4 + Würgen); RK 10; TW 2W8; TP 12; BW 1,5 m; AW 1W20; BES Würgen mit 1W3 Schaden und 1,5 m weit schleifen; RW ZÄH +3, REF -1, WIL +4; G N.\n\n' +
+            'Sumpfschakal (3W7): INI +2; A Biss +2 nah (1W4); RK 12; TW 1W8; TP 4; BW 12 m; AW 1W20; RW ZÄH +1, REF +2, WIL +1; G C.\n\n' +
+            '... Sailors ...\n\n' +
+            'Vine Horrors (2): Init +2; Atk vine +2 melee (1d4); AC 13; HD 2d10; hp 10 each; MV 20’; Act 2d20; SP entangle (automatic 1d6 damage on next round if both vine attacks land; DC 15 Str check to escape); SV Fort +2, Ref +0, Will +2; AL C.\n\n' +
+            'Tar Ooze: Init (always last); Atk pseudopod +4 melee (1d4 + ignite for additional 1d4 on following round); AC 10; HD 2d10; hp 10; MV 5’, climb 5’; Act 1d20; SP half damage from slicing and piercing weapons; SV Fort +6, Ref -8, Will -6; AL N.\n\n' +
+            '';
+  }
+
+</script>
+
+<div class="output-template">
+<script id="all-cards-template" type='text/x-handlebars'>
+    {{#each monsterStats as |monsterStat|}}
+      {{> cardPartial settings=../settings monster=monsterStat }}
+    {{/each}}
+</script>
+</div>
+
+<div class="output-template">
+<script id="single-card-template" type='text/x-handlebars'>
+  <div class="card {{#if settings.drawBorder}}border-yes{{else}}border-no{{/if}}">
+
+      <div id="name"><span class="monster-name">{{monster.name}}</span>
+        {{#if monster.number}}
+          <span class="monster-number">[{{monster.number}}]</span>
+        {{else}}
+          {{#if monster.info}}
+            <span class="monster-info">({{monster.info}})</span>
+          {{/if}}
+        {{/if}}
+      </div>
+
+      <div class="iniaw prop">
+          <div class="ini label">INI</div>
+          <div class="ini value">{{monster.ini}}</div>
+          <div class="aw label ml">AW</div>
+          <div class="aw value">{{monster.aw}}</div>
+      </div>
+
+      <div class="a prop">
+          <div class="a label">A</div>
+          <div class="a value">{{monster.a}}</div>
+      </div>
+
+      <div class="rktp prop">
+          <div class="rk label">RK</div>
+          <div class="rk value">{{monster.rk}}</div>
+          <div class="tp label ml">TP</div>
+          <div class="tp value">{{monster.tp}} ({{monster.tw}})</div>
+      </div>
+
+      <div class="bw prop">
+          <div class="bw label">BW</div>
+          <div class="bw value">{{monster.bw}}</div>
+      </div>
+
+      <div class="rw prop">
+          <div class="rw label">RW ZÄH</div>
+          <div class="rw value">{{monster.rw_zaeh}}</div>
+          <div class="rw label ml">REF</div>
+          <div class="rw value">{{monster.rw_ref}}</div>
+          <div class="rw label ml">WIL</div>
+          <div class="rw value">{{monster.rw_wil}}</div>
+      </div>
+
+      <div class="g prop">
+          <div class="g label">G</div>
+          <div class="g value">{{monster.gesinnung}}</div>
+      </div>
+
+      {{#if monster.sp}}
+      <div class="sp prop">
+          <div class="sp label">BES</div>
+          <div class="sp value">{{monster.sp}}</div>
+      </div>
+      {{/if}}
+
+  </div>
+</script>
+</div>
+
+</body>
+</html>
