@@ -344,7 +344,8 @@
       BES: 'BES',
       rechtschaffen: 'rechtschaffen',
       neutral: 'neutral',
-      chaotisch: 'chaotisch'
+      chaotisch: 'chaotisch',
+      variabel: 'variabel'
     },
     en: {
       INI: 'Init',
@@ -361,7 +362,8 @@
       BES: 'SP',
       rechtschaffen: 'lawful',
       neutral: 'neutral',
-      chaotisch: 'chaotic'
+      chaotisch: 'chaotic',
+      variabel: 'variable'
     }
   }
 
@@ -439,7 +441,7 @@
   }
 
   function parseAlignment(text) {
-    const match = text.match(/[,;]\s*(G|AL)\s+(?<gesinnung>[RLNC])\./);
+    const match = text.match(/[,;]\s*(G|AL)\s+(?<gesinnung>([RLNCV]|var))\./);
     if (match) {
       const ges = match.groups['gesinnung'];
       switch (ges) {
@@ -447,6 +449,8 @@
         case 'L': return 'rechtschaffen';
         case 'N': return 'neutral';
         case 'C': return 'chaotisch';
+        case 'V': return 'variabel';
+        case 'var': return 'variabel';
       }
     }
     return '?';
