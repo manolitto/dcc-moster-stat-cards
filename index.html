@@ -352,7 +352,7 @@
       AW: 'HD',
       A: 'Atk',
       RK: 'AC',
-      TP: 'hp',
+      TP: 'HP',
       BW: 'MV',
       RW: 'SV',
       ZAH: 'Fort',
@@ -391,7 +391,7 @@
         case 'de':
           return s;
         case 'en':
-          return s.replaceAll(/(\d*)(W)(\d)/g, "$1d$3");
+          return s ? s.replaceAll(/(\d*)(W)(\d)/g, "$1d$3") : '';
         default:
           return s;
       }
@@ -481,9 +481,10 @@
       info: parseNameInfo(text),
       ini: parseInit(text),
       a: unifyDiceRolls(parseGenericProp(text, ['A','Atk'])),
+      dmg: unifyDiceRolls(parseGenericProp(text, ['Dmg'])),
       rk: parseGenericProp(text, ['RK','AC']),
       tw: unifyDiceRolls(parseGenericProp(text, ['TW','HD'])),
-      tp: parseGenericProp(text, ['TP','hp']),
+      tp: parseGenericProp(text, ['TP','hp', 'HP']),
       bw: parseGenericProp(text, ['BW','MV']),
       aw: unifyDiceRolls(parseGenericProp(text, ['AW','Act'])),
       rw_zaeh: parseSaving(text, 'zaeh'),
@@ -644,14 +645,22 @@
 
       <div class="a prop">
           <div class="a label">{{settings.labels.A}}</div>
-          <div class="a value">{{translateDice monster.a settings.lang}}</div>
+          <div class="a value">{{translateDice monster.a settings.lang}}
+            {{#if monster.dmg}}
+              ({{translateDice monster.dmg settings.lang}})
+            {{/if}}
+          </div>
       </div>
 
       <div class="rktp prop">
           <div class="rk label">{{settings.labels.RK}}</div>
           <div class="rk value">{{monster.rk}}</div>
           <div class="tp label ml">{{settings.labels.TP}}</div>
-          <div class="tp value">{{monster.tp}} ({{translateDice monster.tw settings.lang}})</div>
+          <div class="tp value">{{monster.tp}}
+            {{#if monster.tw}}
+              ({{translateDice monster.tw settings.lang}})
+            {{/if}}
+           </div>
       </div>
 
       <div class="bw prop">
