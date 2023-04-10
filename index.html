@@ -531,7 +531,13 @@
             num = Math.min(num, settings.maxNumberOfCopies);
           }
           for (let i = 0; i < num; i++) {
-            const copy = {...monsterStat, number: `#${i+1} / ${number}`}
+            let s;
+            if (settings.randomMonsterCount) {
+              s = `#${i+1} / ${num} (${number})`
+            } else {
+              s = `#${i+1} / ${number}`;
+            }
+            const copy = {...monsterStat, number: s}
             result.push(copy);
           }
           continue;
